@@ -20,7 +20,7 @@ const metadata = {
 }
 
 // 3. Set the networks
-const networks = [mainnet, arbitrum]
+const networks = [mainnet, arbitrum, base, celo]
 
 // 4. Create Wagmi Adapter
 const wagmiAdapter = new WagmiAdapter({
