@@ -211,20 +211,30 @@ const ContractInteraction = ({ contractAddress, account, provider }) => {
         </div>
 
         <div className="flex gap-2">
-          <button
-            onClick={callReadFunction}
-            disabled={loading || !contract || !functionName}
-            className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
-          >
-            {loading ? 'Calling...' : 'Call (Read)'}
-          </button>
-          <button
-            onClick={callWriteFunction}
-            disabled={loading || !contract || !functionName}
-            className="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
-          >
-            {loading ? 'Sending...' : 'Call (Write)'}
-          </button>
+          {(() => {
+            const selectedFunc = [...readOnlyFunctions, ...writeFunctions].find(f => f.name === functionName)
+            const isReadFunction = selectedFunc && (selectedFunc.stateMutability === 'view' || selectedFunc.stateMutability === 'pure')
+            const isWriteFunction = selectedFunc && selectedFunc.stateMutability !== 'view' && selectedFunc.stateMutability !== 'pure'
+            
+            return (
+              <>
+                <button
+                  onClick={callReadFunction}
+                  disabled={loading || !contract || !functionName || !isReadFunction}
+                  className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                >
+                  {loading ? 'Calling...' : 'Call (Read)'}
+                </button>
+                <button
+                  onClick={callWriteFunction}
+                  disabled={loading || !contract || !functionName || !isWriteFunction}
+                  className="flex-1 px-4 py-2 bg-orange-600 hover:bg-orange-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+                >
+                  {loading ? 'Sending...' : 'Call (Write)'}
+                </button>
+              </>
+            )
+          })()}
         </div>
 
         {error && (
