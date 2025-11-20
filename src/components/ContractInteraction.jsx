@@ -77,6 +77,11 @@ const ContractInteraction = ({ contractAddress, account, provider }) => {
     }
   }
 
+  const loadFinnacleABI = () => {
+    setAbi(JSON.stringify(FINNACLE_TOKEN_ABI, null, 2))
+    setError(null)
+  }
+
   const callWriteFunction = async () => {
     if (!contract || !functionName || !account) return
 
