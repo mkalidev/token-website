@@ -1,27 +1,25 @@
 import { useEffect } from 'react'
 import { useAppKit } from '@reown/appkit/react'
-import { useAccount, useWalletClient } from 'wagmi'
+import { useAccount, usePublicClient } from 'wagmi'
 import { ethers } from 'ethers'
 
 const WalletConnection = ({ account, setAccount, setProvider }) => {
   const { open, close } = useAppKit()
   const { address, isConnected } = useAccount()
-  const { data: walletClient } = useWalletClient()
+  const publicClient = usePublicClient()
 
   useEffect(() => {
-    if (isConnected && address) {
+    if (isConnected && address && publicClient) {
       setAccount(address)
       
-      // Convert wagmi wallet client to ethers provider
-      if (walletClient) {
-        const ethersProvider = new ethers.BrowserProvider(walletClient.transport)
-        setProvider(ethersProvider)
-      }
+      // Convert wagmi public client to ethers provider
+      const ethersProvider = new ethers.BrowserProvider(publicClient.transport)
+      setProvider(ethersProvider)
     } else {
       setAccount(null)
       setProvider(null)
     }
-  }, [isConnected, address, walletClient, setAccount, setProvider])
+  }, [isConnected, address, publicClient, setAccount, setProvider])
 
   const connectWallet = () => {
     open()
@@ -58,10 +56,9 @@ const WalletConnection = ({ account, setAccount, setProvider }) => {
         ) : (
           <button
             onClick={connectWallet}
-            disabled={isConnecting}
-            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
+            className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors"
           >
-            {isConnecting ? 'Connecting...' : 'Connect Wallet'}
+            Connect Wallet
           </button>
         )}
       </div>
