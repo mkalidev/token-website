@@ -151,10 +151,10 @@ const ContractInteraction = ({ contractAddress, account, provider }) => {
           </p>
         </div>
 
-        {readOnlyFunctions.length > 0 && (
+        {(readOnlyFunctions.length > 0 || writeFunctions.length > 0) && (
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Available Read Functions
+              Available Functions
             </label>
             <select
               value={functionName}
@@ -162,11 +162,24 @@ const ContractInteraction = ({ contractAddress, account, provider }) => {
               className="w-full px-4 py-2 bg-dark-card border border-dark-border rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Select a function...</option>
-              {readOnlyFunctions.map((func, idx) => (
-                <option key={idx} value={func.name}>
-                  {func.name} ({func.stateMutability})
-                </option>
-              ))}
+              {readOnlyFunctions.length > 0 && (
+                <optgroup label="Read Functions">
+                  {readOnlyFunctions.map((func, idx) => (
+                    <option key={`read-${idx}`} value={func.name}>
+                      {func.name} ({func.stateMutability})
+                    </option>
+                  ))}
+                </optgroup>
+              )}
+              {writeFunctions.length > 0 && (
+                <optgroup label="Write Functions">
+                  {writeFunctions.map((func, idx) => (
+                    <option key={`write-${idx}`} value={func.name}>
+                      {func.name} ({func.stateMutability})
+                    </option>
+                  ))}
+                </optgroup>
+              )}
             </select>
           </div>
         )}
