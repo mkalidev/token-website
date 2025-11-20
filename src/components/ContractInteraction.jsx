@@ -25,6 +25,12 @@ const ContractInteraction = ({ contractAddress, account, provider }) => {
           item => item.type === 'function' && (item.stateMutability === 'view' || item.stateMutability === 'pure')
         )
         setReadOnlyFunctions(readFunctions)
+        
+        // Extract write functions from ABI
+        const writeFuncs = parsedAbi.filter(
+          item => item.type === 'function' && item.stateMutability !== 'view' && item.stateMutability !== 'pure'
+        )
+        setWriteFunctions(writeFuncs)
       } catch (err) {
         console.error('Error parsing ABI:', err)
         setError('Invalid ABI format. Please check your JSON.')
