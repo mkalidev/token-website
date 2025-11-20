@@ -11,6 +11,7 @@ const ContractInteraction = ({ contractAddress, account, provider }) => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
   const [readOnlyFunctions, setReadOnlyFunctions] = useState([])
+  const [writeFunctions, setWriteFunctions] = useState([])
 
   useEffect(() => {
     if (contractAddress && provider && abi) {
