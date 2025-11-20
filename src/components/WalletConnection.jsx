@@ -1,34 +1,34 @@
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useAppKit } from '@reown/appkit/react'
+import { useAccount, useWalletClient } from 'wagmi'
+import { ethers } from 'ethers'
 
 const WalletConnection = ({ account, setAccount, setProvider }) => {
-  const [isConnecting, setIsConnecting] = useState(false)
+  const { open, close } = useAppKit()
+  const { address, isConnected } = useAccount()
+  const { data: walletClient } = useWalletClient()
 
-  const connectWallet = async () => {
-    if (typeof window.ethereum !== 'undefined') {
-      try {
-        setIsConnecting(true)
-        const provider = window.ethereum
-        const accounts = await provider.request({ method: 'eth_requestAccounts' })
-        setAccount(accounts[0])
-        
-        // Create ethers provider
-        const { ethers } = await import('ethers')
-        const ethersProvider = new ethers.BrowserProvider(provider)
+  useEffect(() => {
+    if (isConnected && address) {
+      setAccount(address)
+      
+      // Convert wagmi wallet client to ethers provider
+      if (walletClient) {
+        const ethersProvider = new ethers.BrowserProvider(walletClient.transport)
         setProvider(ethersProvider)
-      } catch (error) {
-        console.error('Error connecting wallet:', error)
-        alert('Failed to connect wallet. Please make sure MetaMask is installed.')
-      } finally {
-        setIsConnecting(false)
       }
     } else {
-      alert('Please install MetaMask or another Web3 wallet to continue.')
+      setAccount(null)
+      setProvider(null)
     }
+  }, [isConnected, address, walletClient, setAccount, setProvider])
+
+  const connectWallet = () => {
+    open()
   }
 
   const disconnectWallet = () => {
-    setAccount(null)
-    setProvider(null)
+    close()
   }
 
   return (
