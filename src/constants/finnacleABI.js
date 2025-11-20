@@ -1,3 +1,6 @@
+// Finnacle Token Contract Address
+export const FINNACLE_TOKEN_ADDRESS = '0x8909332Dd684c572703F9158039788a3057D0C40'
+
 // Finnacle Token Contract ABI
 export const FINNACLE_TOKEN_ABI = [
   {

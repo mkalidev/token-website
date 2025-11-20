@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import TokenDetails from './components/TokenDetails'
 import ContractInteraction from './components/ContractInteraction'
 import WalletConnection from './components/WalletConnection'
+import { FINNACLE_TOKEN_ADDRESS } from './constants/finnacleABI'
 
 function App() {
   const [account, setAccount] = useState(null)
@@ -34,9 +35,17 @@ function App() {
             </h2>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Token Address
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Token Address
+                  </label>
+                  <button
+                    onClick={() => setTokenAddress(FINNACLE_TOKEN_ADDRESS)}
+                    className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-xs font-medium transition-colors"
+                  >
+                    Load Finnacle
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={tokenAddress}
@@ -46,9 +55,17 @@ function App() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  Contract Address
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Contract Address
+                  </label>
+                  <button
+                    onClick={() => setContractAddress(FINNACLE_TOKEN_ADDRESS)}
+                    className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-xs font-medium transition-colors"
+                  >
+                    Load Finnacle
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={contractAddress}
