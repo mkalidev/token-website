@@ -128,9 +128,17 @@ const ContractInteraction = ({ contractAddress, account, provider }) => {
 
       <div className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">
-            Contract ABI (JSON)
-          </label>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-sm font-medium text-gray-300">
+              Contract ABI (JSON)
+            </label>
+            <button
+              onClick={loadFinnacleABI}
+              className="px-3 py-1 bg-purple-600 hover:bg-purple-700 text-white rounded text-xs font-medium transition-colors"
+            >
+              Load Finnacle ABI
+            </button>
+          </div>
           <textarea
             value={abi}
             onChange={(e) => setAbi(e.target.value)}
