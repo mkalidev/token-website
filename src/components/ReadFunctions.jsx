@@ -54,21 +54,39 @@ const ReadFunctions = ({ contractAddress, provider, account }) => {
       for (const func of readFunctions) {
         try {
           let result
+          let decimals = 18 // Default decimals for formatting
+          
+          // Try to get decimals first for proper formatting
+          try {
+            const decimalsResult = await contract.decimals().catch(() => null)
+            if (decimalsResult !== null) {
+              decimals = Number(decimalsResult)
+            }
+          } catch {
+            // Use default 18 if decimals fails
+          }
           
           // Handle functions with parameters
           if (func.name === 'balanceOf' && account) {
-            result = await contract.balanceOf(account)
-            results[`${func.name}(${account.slice(0, 6)}...)`] = {
-              value: ethers.formatUnits(result, 18),
-              raw: result.toString(),
-              type: 'uint256'
+            result = await contract.balanceOf(account).catch(() => null)
+            if (result !== null) {
+              results[`${func.name}(${account.slice(0, 6)}...)`] = {
+                value: ethers.formatUnits(result, decimals),
+                raw: result.toString(),
+                type: 'uint256'
+              }
             }
           } else if (func.name === 'allowance' && account) {
             // For allowance, we need owner and spender - skip for now or use default
             continue
           } else if (func.inputs && func.inputs.length === 0) {
             // Functions with no parameters
-            result = await contract[func.name]()
+            result = await contract[func.name]().catch(() => null)
+            
+            if (result === null) {
+              // If function call failed, skip it
+              continue
+            }
             
             // Format result based on return type
             if (func.outputs && func.outputs.length > 0) {
@@ -81,8 +99,10 @@ const ReadFunctions = ({ contractAddress, provider, account }) => {
                     type: outputType
                   }
                 } else {
+                  // Use decimals for formatting if available
+                  const formatDecimals = func.name === 'totalSupply' ? decimals : 0
                   results[func.name] = {
-                    value: ethers.formatUnits(result, func.name === 'totalSupply' ? 18 : 0),
+                    value: ethers.formatUnits(result, formatDecimals),
                     raw: result.toString(),
                     type: outputType
                   }
@@ -110,9 +130,12 @@ const ReadFunctions = ({ contractAddress, provider, account }) => {
           }
         } catch (err) {
           console.error(`Error calling ${func.name}:`, err)
-          results[func.name] = {
-            value: 'Error',
-            error: err.message
+          // Only show error if it's not a "function not found" type error
+          if (!err.message?.includes('could not decode') && !err.message?.includes('BAD_DATA')) {
+            results[func.name] = {
+              value: 'Error',
+              error: err.message || 'Function call failed'
+            }
           }
         }
       }
