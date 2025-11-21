@@ -18,10 +18,9 @@ const TokenDetails = ({ tokenAddress, provider }) => {
   const chainId = useChainId()
 
   // Get public RPC URL based on chain
-  const getPublicRpcUrl = () => {
-    // Default to mainnet if chainId is not available
-    const currentChainId = chainId || 1
-    switch (currentChainId) {
+  const getPublicRpcUrl = (networkChainId) => {
+    const targetChainId = networkChainId || chainId || 1
+    switch (targetChainId) {
       case 1: // Mainnet
         return 'https://eth.llamarpc.com'
       case 42161: // Arbitrum
@@ -33,6 +32,30 @@ const TokenDetails = ({ tokenAddress, provider }) => {
       default:
         return 'https://eth.llamarpc.com' // Default to mainnet
     }
+  }
+
+  // Try to find which network the contract exists on
+  const findContractNetwork = async (address) => {
+    const networks = [
+      { id: 1, name: 'Ethereum Mainnet' },
+      { id: 42161, name: 'Arbitrum' },
+      { id: 8453, name: 'Base' },
+      { id: 42220, name: 'Celo' },
+    ]
+
+    for (const network of networks) {
+      try {
+        const rpcUrl = getPublicRpcUrl(network.id)
+        const provider = new ethers.JsonRpcProvider(rpcUrl)
+        const code = await provider.getCode(address)
+        if (code && code !== '0x') {
+          return network
+        }
+      } catch (err) {
+        continue
+      }
+    }
+    return null
   }
 
   useEffect(() => {
@@ -48,9 +71,13 @@ const TokenDetails = ({ tokenAddress, provider }) => {
     setError(null)
 
     try {
+      // First, try to find which network the contract is on
+      const contractNetwork = await findContractNetwork(tokenAddress)
+      const targetChainId = contractNetwork?.id || chainId || 1
+      
       // Use public RPC provider for read operations
-      const rpcUrl = getPublicRpcUrl()
-      console.log('TokenDetails - Using RPC URL:', rpcUrl, 'for chain:', chainId)
+      const rpcUrl = getPublicRpcUrl(targetChainId)
+      console.log('TokenDetails - Using RPC URL:', rpcUrl, 'for chain:', targetChainId, contractNetwork ? `(Found on ${contractNetwork.name})` : '')
       const publicProvider = new ethers.JsonRpcProvider(rpcUrl)
       const contract = new ethers.Contract(tokenAddress, ERC20_ABI, publicProvider)
       console.log('TokenDetails - Contract initialized:', tokenAddress)
