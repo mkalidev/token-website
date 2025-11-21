@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
+import { useChainId } from 'wagmi'
 
 // Standard ERC20 ABI (minimal)
 const ERC20_ABI = [
@@ -14,21 +15,41 @@ const TokenDetails = ({ tokenAddress, provider }) => {
   const [tokenInfo, setTokenInfo] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const chainId = useChainId()
+
+  // Get public RPC URL based on chain
+  const getPublicRpcUrl = () => {
+    switch (chainId) {
+      case 1: // Mainnet
+        return 'https://eth.llamarpc.com'
+      case 42161: // Arbitrum
+        return 'https://arb1.arbitrum.io/rpc'
+      case 8453: // Base
+        return 'https://mainnet.base.org'
+      case 42220: // Celo
+        return 'https://forno.celo.org'
+      default:
+        return 'https://eth.llamarpc.com' // Default to mainnet
+    }
+  }
 
   useEffect(() => {
-    if (tokenAddress && provider) {
+    if (tokenAddress) {
       fetchTokenDetails()
     }
-  }, [tokenAddress, provider])
+  }, [tokenAddress, chainId])
 
   const fetchTokenDetails = async () => {
-    if (!tokenAddress || !provider) return
+    if (!tokenAddress) return
 
     setLoading(true)
     setError(null)
 
     try {
-      const contract = new ethers.Contract(tokenAddress, ERC20_ABI, provider)
+      // Use public RPC provider for read operations
+      const rpcUrl = getPublicRpcUrl()
+      const publicProvider = new ethers.JsonRpcProvider(rpcUrl)
+      const contract = new ethers.Contract(tokenAddress, ERC20_ABI, publicProvider)
       
       const [name, symbol, decimals, totalSupply] = await Promise.all([
         contract.name().catch(() => 'N/A'),
@@ -60,7 +81,7 @@ const TokenDetails = ({ tokenAddress, provider }) => {
         <h2 className="text-2xl font-semibold text-white">Token Details</h2>
         <button
           onClick={fetchTokenDetails}
-          disabled={loading || !provider}
+          disabled={loading}
           className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white rounded-lg text-sm font-medium transition-colors"
         >
           {loading ? 'Loading...' : 'Refresh'}
