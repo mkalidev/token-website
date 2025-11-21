@@ -1,25 +1,35 @@
 import { useEffect } from 'react'
 import { useAppKit } from '@reown/appkit/react'
-import { useAccount, usePublicClient } from 'wagmi'
+import { useAccount, useWalletClient } from 'wagmi'
 import { ethers } from 'ethers'
 
 const WalletConnection = ({ account, setAccount, setProvider }) => {
   const { open, close } = useAppKit()
   const { address, isConnected } = useAccount()
-  const publicClient = usePublicClient()
+  const { data: walletClient } = useWalletClient()
 
   useEffect(() => {
-    if (isConnected && address && publicClient) {
+    if (isConnected && address) {
       setAccount(address)
       
-      // Convert wagmi public client to ethers provider
-      const ethersProvider = new ethers.BrowserProvider(publicClient.transport)
-      setProvider(ethersProvider)
+      // Convert wagmi wallet client to ethers provider
+      if (walletClient) {
+        // Use the wallet client's account to create an ethers provider
+        // For read operations, we can use a public RPC, but for consistency use the connected wallet
+        const ethersProvider = new ethers.BrowserProvider(walletClient.transport)
+        setProvider(ethersProvider)
+      } else {
+        // Fallback: use window.ethereum if available
+        if (typeof window !== 'undefined' && window.ethereum) {
+          const ethersProvider = new ethers.BrowserProvider(window.ethereum)
+          setProvider(ethersProvider)
+        }
+      }
     } else {
       setAccount(null)
       setProvider(null)
     }
-  }, [isConnected, address, publicClient, setAccount, setProvider])
+  }, [isConnected, address, walletClient, setAccount, setProvider])
 
   const connectWallet = () => {
     open()
