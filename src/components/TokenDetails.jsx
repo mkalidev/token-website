@@ -55,21 +55,54 @@ const TokenDetails = ({ tokenAddress, provider }) => {
       const contract = new ethers.Contract(tokenAddress, ERC20_ABI, publicProvider)
       console.log('TokenDetails - Contract initialized:', tokenAddress)
       
-      // Get decimals first with fallback
+      // Get decimals first with fallback - suppress decode errors
       let decimals = 18
       try {
         const decimalsResult = await contract.decimals()
-        decimals = Number(decimalsResult)
+        if (decimalsResult !== null && decimalsResult !== undefined) {
+          decimals = Number(decimalsResult)
+        }
       } catch (err) {
-        console.warn('Could not fetch decimals, using default 18:', err)
-        // Use default 18 if decimals fails
+        // Silently use default 18 if decimals fails (common for contracts not on this network)
+        if (!err.message?.includes('could not decode') && !err.message?.includes('BAD_DATA')) {
+          console.warn('Could not fetch decimals:', err.message)
+        }
       }
 
-      const [name, symbol, totalSupply] = await Promise.all([
-        contract.name().catch(() => 'N/A'),
-        contract.symbol().catch(() => 'N/A'),
-        contract.totalSupply().catch(() => ethers.parseUnits('0', decimals)),
-      ])
+      // Try to fetch token info with better error handling
+      let name = 'N/A'
+      let symbol = 'N/A'
+      let totalSupply = ethers.parseUnits('0', decimals)
+
+      try {
+        const results = await Promise.allSettled([
+          contract.name(),
+          contract.symbol(),
+          contract.totalSupply(),
+        ])
+
+        if (results[0].status === 'fulfilled') {
+          name = results[0].value
+        }
+        if (results[1].status === 'fulfilled') {
+          symbol = results[1].value
+        }
+        if (results[2].status === 'fulfilled') {
+          totalSupply = results[2].value
+        }
+
+        // If all calls failed, the contract might not exist on this network
+        if (name === 'N/A' && symbol === 'N/A' && totalSupply === ethers.parseUnits('0', decimals)) {
+          setError('Contract not found on this network. Please check the network or contract address.')
+          setLoading(false)
+          return
+        }
+      } catch (err) {
+        console.error('Error fetching token info:', err)
+        setError('Failed to fetch token details. The contract may not exist on this network.')
+        setLoading(false)
+        return
+      }
 
       setTokenInfo({
         name,
