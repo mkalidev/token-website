@@ -101,8 +101,14 @@ npm run preview
 token-website/
 ├── src/
 │   ├── components/
-│   │   ├── WalletConnection.jsx    # Wallet connection component
-│   │   └── TokenDetails.jsx        # Token information display
+│   │   ├── WalletConnection.jsx    # Wallet connection using Reown AppKit
+│   │   ├── TokenDetails.jsx        # Token basic information display
+│   │   ├── ReadFunctions.jsx       # Auto-display all read functions
+│   │   └── WriteFunctions.jsx      # Interactive write functions section
+│   ├── providers/
+│   │   └── AppKitProvider.jsx      # Reown AppKit provider setup
+│   ├── constants/
+│   │   └── finnacleABI.js          # Finnacle Token ABI and contract address
 │   ├── App.jsx                     # Main application component
 │   ├── main.jsx                    # Application entry point
 │   └── index.css                   # Global styles
