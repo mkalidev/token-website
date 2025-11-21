@@ -19,24 +19,31 @@ function App() {
 
   return (
     <div className="min-h-screen bg-dark-bg">
-      <div className="container mx-auto px-4 py-8">
-        <header className="mb-8">
-          <h1 className="text-4xl font-bold text-white mb-2">
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        {/* Header */}
+        <header className="mb-12 text-center animate-fade-in">
+          <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 mb-6 shadow-2xl shadow-blue-500/20">
+            <span className="text-4xl">⚡</span>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
             Finnacle Token Dashboard
           </h1>
-          <p className="text-gray-400">
+          <p className="text-gray-300 text-lg max-w-2xl mx-auto">
             Connect your wallet to view token details and interact with the contract
           </p>
         </header>
 
-        <WalletConnection 
-          account={account}
-          setAccount={setAccount}
-          setProvider={setProvider}
-        />
+        {/* Wallet Connection */}
+        <div className="animate-slide-up">
+          <WalletConnection 
+            account={account}
+            setAccount={setAccount}
+            setProvider={setProvider}
+          />
+        </div>
 
         {account && provider && contractAddress ? (
-          <div className="mt-6 space-y-6">
+          <div className="mt-8 space-y-8 animate-fade-in">
             {/* Token Basic Details */}
             <TokenDetails 
               tokenAddress={contractAddress}
@@ -58,8 +65,11 @@ function App() {
             />
           </div>
         ) : (
-          <div className="mt-6 bg-dark-surface rounded-lg p-8 border border-dark-border text-center">
-            <p className="text-gray-400">
+          <div className="mt-8 glass rounded-2xl p-12 text-center animate-slide-up">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-dark-card mb-4">
+              <span className="text-3xl">🔐</span>
+            </div>
+            <p className="text-gray-300 text-lg">
               Please connect your wallet to view contract details and interact with functions
             </p>
           </div>
