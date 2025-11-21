@@ -1,26 +1,47 @@
 import { useState, useEffect } from 'react'
 import { ethers } from 'ethers'
 import { FINNACLE_TOKEN_ABI } from '../constants/finnacleABI'
+import { useChainId } from 'wagmi'
 
 const ReadFunctions = ({ contractAddress, provider, account }) => {
   const [readResults, setReadResults] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const chainId = useChainId()
+
+  // Get public RPC URL based on chain
+  const getPublicRpcUrl = () => {
+    switch (chainId) {
+      case 1: // Mainnet
+        return 'https://eth.llamarpc.com'
+      case 42161: // Arbitrum
+        return 'https://arb1.arbitrum.io/rpc'
+      case 8453: // Base
+        return 'https://mainnet.base.org'
+      case 42220: // Celo
+        return 'https://forno.celo.org'
+      default:
+        return 'https://eth.llamarpc.com' // Default to mainnet
+    }
+  }
 
   useEffect(() => {
-    if (contractAddress && provider) {
+    if (contractAddress) {
       fetchAllReadFunctions()
     }
-  }, [contractAddress, provider, account])
+  }, [contractAddress, account, chainId])
 
   const fetchAllReadFunctions = async () => {
-    if (!contractAddress || !provider) return
+    if (!contractAddress) return
 
     setLoading(true)
     setError(null)
 
     try {
-      const contract = new ethers.Contract(contractAddress, FINNACLE_TOKEN_ABI, provider)
+      // Use public RPC provider for read operations to avoid project ID issues
+      const rpcUrl = getPublicRpcUrl()
+      const publicProvider = new ethers.JsonRpcProvider(rpcUrl)
+      const contract = new ethers.Contract(contractAddress, FINNACLE_TOKEN_ABI, publicProvider)
       
       // Get all read functions from ABI
       const readFunctions = FINNACLE_TOKEN_ABI.filter(
