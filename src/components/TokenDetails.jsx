@@ -19,7 +19,7 @@ const TokenDetails = ({ tokenAddress, provider }) => {
 
   // Get public RPC URL based on chain
   const getPublicRpcUrl = (networkChainId) => {
-    const targetChainId = networkChainId || chainId || 1
+    const targetChainId = networkChainId || chainId || 8453 // Default to Base
     switch (targetChainId) {
       case 1: // Mainnet
         return 'https://eth.llamarpc.com'
@@ -30,16 +30,16 @@ const TokenDetails = ({ tokenAddress, provider }) => {
       case 42220: // Celo
         return 'https://forno.celo.org'
       default:
-        return 'https://eth.llamarpc.com' // Default to mainnet
+        return 'https://mainnet.base.org' // Default to Base
     }
   }
 
-  // Try to find which network the contract exists on
+  // Try to find which network the contract exists on - check Base first
   const findContractNetwork = async (address) => {
     const networks = [
+      { id: 8453, name: 'Base' }, // Check Base first since it's the default
       { id: 1, name: 'Ethereum Mainnet' },
       { id: 42161, name: 'Arbitrum' },
-      { id: 8453, name: 'Base' },
       { id: 42220, name: 'Celo' },
     ]
 
@@ -73,7 +73,7 @@ const TokenDetails = ({ tokenAddress, provider }) => {
     try {
       // First, try to find which network the contract is on
       const contractNetwork = await findContractNetwork(tokenAddress)
-      const targetChainId = contractNetwork?.id || chainId || 1
+      const targetChainId = contractNetwork?.id || chainId || 8453 // Default to Base
       
       // Use public RPC provider for read operations
       const rpcUrl = getPublicRpcUrl(targetChainId)

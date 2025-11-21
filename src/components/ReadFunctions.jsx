@@ -11,8 +11,8 @@ const ReadFunctions = ({ contractAddress, provider, account }) => {
 
   // Get public RPC URL based on chain
   const getPublicRpcUrl = () => {
-    // Default to mainnet if chainId is not available
-    const currentChainId = chainId || 1
+    // Default to Base if chainId is not available
+    const currentChainId = chainId || 8453
     switch (currentChainId) {
       case 1: // Mainnet
         return 'https://eth.llamarpc.com'
@@ -23,7 +23,7 @@ const ReadFunctions = ({ contractAddress, provider, account }) => {
       case 42220: // Celo
         return 'https://forno.celo.org'
       default:
-        return 'https://eth.llamarpc.com' // Default to mainnet
+        return 'https://mainnet.base.org' // Default to Base
     }
   }
 
