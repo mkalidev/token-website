@@ -9,7 +9,7 @@ const queryClient = new QueryClient()
 
 // 1. Get projectId from https://dashboard.reown.com
 // You can set this via environment variable or replace with your actual project ID
-const projectId = import.meta.env.VITE_REOWN_PROJECT_ID || 'YOUR_PROJECT_ID'
+const projectId = import.meta.env.VITE_REOWN_PROJECT_ID || '39620c2d95c222279e45e3862fba2338'
 
 // 2. Create a metadata object - optional
 const metadata = {
@@ -19,8 +19,8 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/179229932']
 }
 
-// 3. Set the networks
-const networks = [mainnet, arbitrum, base, celo]
+// 3. Set the networks - Base first to make it default
+const networks = [base, mainnet, arbitrum, celo]
 
 // 4. Create Wagmi Adapter
 const wagmiAdapter = new WagmiAdapter({
@@ -35,6 +35,7 @@ createAppKit({
   networks,
   projectId,
   metadata,
+  defaultChain: base, // Set Base as default chain
   features: {
     analytics: true // Optional - defaults to your Cloud configuration
   }
