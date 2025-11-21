@@ -51,17 +51,26 @@ const TokenDetails = ({ tokenAddress, provider }) => {
       const publicProvider = new ethers.JsonRpcProvider(rpcUrl)
       const contract = new ethers.Contract(tokenAddress, ERC20_ABI, publicProvider)
       
-      const [name, symbol, decimals, totalSupply] = await Promise.all([
+      // Get decimals first with fallback
+      let decimals = 18
+      try {
+        const decimalsResult = await contract.decimals()
+        decimals = Number(decimalsResult)
+      } catch (err) {
+        console.warn('Could not fetch decimals, using default 18:', err)
+        // Use default 18 if decimals fails
+      }
+
+      const [name, symbol, totalSupply] = await Promise.all([
         contract.name().catch(() => 'N/A'),
         contract.symbol().catch(() => 'N/A'),
-        contract.decimals().catch(() => 18),
-        contract.totalSupply().catch(() => ethers.parseUnits('0', 18)),
+        contract.totalSupply().catch(() => ethers.parseUnits('0', decimals)),
       ])
 
       setTokenInfo({
         name,
         symbol,
-        decimals: Number(decimals),
+        decimals: decimals,
         totalSupply: ethers.formatUnits(totalSupply, decimals),
         address: tokenAddress,
       })
