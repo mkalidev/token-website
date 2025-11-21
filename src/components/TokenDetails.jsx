@@ -19,7 +19,9 @@ const TokenDetails = ({ tokenAddress, provider }) => {
 
   // Get public RPC URL based on chain
   const getPublicRpcUrl = () => {
-    switch (chainId) {
+    // Default to mainnet if chainId is not available
+    const currentChainId = chainId || 1
+    switch (currentChainId) {
       case 1: // Mainnet
         return 'https://eth.llamarpc.com'
       case 42161: // Arbitrum
