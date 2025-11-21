@@ -48,8 +48,10 @@ const TokenDetails = ({ tokenAddress, provider }) => {
     try {
       // Use public RPC provider for read operations
       const rpcUrl = getPublicRpcUrl()
+      console.log('TokenDetails - Using RPC URL:', rpcUrl, 'for chain:', chainId)
       const publicProvider = new ethers.JsonRpcProvider(rpcUrl)
       const contract = new ethers.Contract(tokenAddress, ERC20_ABI, publicProvider)
+      console.log('TokenDetails - Contract initialized:', tokenAddress)
       
       // Get decimals first with fallback
       let decimals = 18

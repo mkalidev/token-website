@@ -29,6 +29,7 @@ const ReadFunctions = ({ contractAddress, provider, account }) => {
     if (contractAddress) {
       fetchAllReadFunctions()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [contractAddress, account, chainId])
 
   const fetchAllReadFunctions = async () => {
@@ -36,12 +37,15 @@ const ReadFunctions = ({ contractAddress, provider, account }) => {
 
     setLoading(true)
     setError(null)
+    setReadResults({}) // Clear previous results
 
     try {
       // Use public RPC provider for read operations to avoid project ID issues
       const rpcUrl = getPublicRpcUrl()
+      console.log('Using RPC URL:', rpcUrl, 'for chain:', chainId)
       const publicProvider = new ethers.JsonRpcProvider(rpcUrl)
       const contract = new ethers.Contract(contractAddress, FINNACLE_TOKEN_ABI, publicProvider)
+      console.log('Contract initialized:', contractAddress)
       
       // Get all read functions from ABI
       const readFunctions = FINNACLE_TOKEN_ABI.filter(
@@ -149,7 +153,7 @@ const ReadFunctions = ({ contractAddress, provider, account }) => {
     }
   }
 
-  if (!contractAddress || !provider) return null
+  if (!contractAddress) return null
 
   return (
     <div className="bg-dark-surface rounded-lg p-6 border border-dark-border">

@@ -42,7 +42,7 @@ function App() {
           />
         </div>
 
-        {account && provider && contractAddress ? (
+        {contractAddress ? (
           <div className="mt-8 space-y-8 animate-fade-in">
             {/* Token Basic Details */}
             <TokenDetails 
@@ -57,12 +57,14 @@ function App() {
               account={account}
             />
 
-            {/* Write Functions - Interactive Section */}
-            <WriteFunctions 
-              contractAddress={contractAddress}
-              account={account}
-              provider={provider}
-            />
+            {/* Write Functions - Interactive Section - Only show if wallet connected */}
+            {account && provider && (
+              <WriteFunctions 
+                contractAddress={contractAddress}
+                account={account}
+                provider={provider}
+              />
+            )}
           </div>
         ) : (
           <div className="mt-8 glass rounded-2xl p-12 text-center animate-slide-up">
