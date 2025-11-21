@@ -19,7 +19,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-dark-bg">
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="container mx-auto px-4 py-8" style={{ maxWidth: '1200px' }}>
         {/* Header */}
         <header className="mb-12 text-center animate-fade-in">
           <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 mb-6 shadow-2xl shadow-blue-500/20">
