@@ -2,15 +2,22 @@
 
 A modern React-based web application for viewing ERC20 token details and interacting with smart contracts on the Ethereum blockchain.
 
+## Contract Information
+
+- **Contract Address**: `0x8909332Dd684c572703F9158039788a3057D0C40`
+- **Token**: Finnacle Token
+- **ABI**: Full contract ABI is implemented and available in the application
+
 ## Features
 
-- 🔗 **Wallet Connection**: Connect your MetaMask or other Web3 wallet to interact with the blockchain
-- 📊 **Token Details**: View comprehensive information about any ERC20 token including:
+- 🔗 **Wallet Connection**: Connect your wallet using Reown (WalletConnect) - supports MetaMask, WalletConnect, Coinbase Wallet, and more
+- 📊 **Token Details**: Automatically displays comprehensive token information when wallet is connected:
   - Token name and symbol
   - Decimals
   - Total supply
   - Contract address
-- 🔄 **Contract Interaction**: Interact with smart contracts (coming soon)
+- 📖 **Read Functions**: Automatically fetches and displays all read-only contract functions when wallet connects
+- ✍️ **Write Functions**: Interactive section to execute contract write functions with parameter inputs
 - 🎨 **Modern UI**: Beautiful dark-themed interface built with Tailwind CSS
 
 ## Tech Stack
@@ -18,6 +25,9 @@ A modern React-based web application for viewing ERC20 token details and interac
 - **React 18** - UI library
 - **Vite** - Build tool and development server
 - **Ethers.js v6** - Ethereum library for blockchain interactions
+- **Reown AppKit (WalletConnect)** - Multi-wallet connection solution
+- **Wagmi** - React Hooks for Ethereum
+- **TanStack Query** - Data fetching and state management
 - **Tailwind CSS** - Utility-first CSS framework
 - **PostCSS** - CSS processing
 
@@ -25,7 +35,7 @@ A modern React-based web application for viewing ERC20 token details and interac
 
 - Node.js (v16 or higher recommended)
 - npm or yarn package manager
-- MetaMask or another Web3 wallet browser extension
+- Web3 wallet (MetaMask, WalletConnect, Coinbase Wallet, or any wallet supported by Reown)
 
 ## Installation
 
@@ -65,19 +75,25 @@ npm run preview
 
 1. **Connect Your Wallet**:
    - Click the "Connect Wallet" button
-   - Approve the connection request in your MetaMask extension
+   - Select your preferred wallet from the Reown modal (supports MetaMask, WalletConnect, Coinbase Wallet, and more)
+   - Approve the connection request
    - Your wallet address will be displayed once connected
+   - The Finnacle Token contract is automatically loaded when you connect
 
 2. **View Token Details**:
-   - Enter an ERC20 token contract address in the "Token Address" field
-   - The token information will automatically load and display:
-     - Name, symbol, decimals, and total supply
-     - Full contract address
+   - Token basic information (name, symbol, decimals, total supply) is automatically displayed when wallet connects
+   - Contract address is shown for reference
 
-3. **Interact with Contracts**:
-   - Enter a smart contract address in the "Contract Address" field
-   - Connect your wallet to enable contract interactions
-   - (Contract interaction features are in development)
+3. **Read Contract Functions**:
+   - All read-only functions are automatically fetched and displayed when wallet connects
+   - Results are shown in a grid layout
+   - Click "Refresh" to reload the data
+
+4. **Interact with Write Functions**:
+   - Select a write function from the dropdown
+   - Enter the required parameters
+   - Click "Execute" to send the transaction
+   - Review transaction details in your wallet before confirming
 
 ## Project Structure
 
@@ -101,19 +117,39 @@ token-website/
 
 The application uses Tailwind CSS with a custom dark theme. You can customize the theme colors in `tailwind.config.js`.
 
+### Reown AppKit Setup
+
+To use the wallet connection feature, you need to:
+
+1. Get a Project ID from [Reown Dashboard](https://dashboard.reown.com)
+2. Set it as an environment variable:
+   ```bash
+   VITE_REOWN_PROJECT_ID=your_project_id_here
+   ```
+   Or update it directly in `src/providers/AppKitProvider.jsx`
+
+### Supported Networks
+
+- Ethereum Mainnet
+- Arbitrum
+- Base
+- Celo
+
 ## Browser Support
 
-- Chrome/Edge (recommended for MetaMask)
+- Chrome/Edge
 - Firefox
 - Brave
-- Other Chromium-based browsers
+- Safari
+- Other modern browsers with Web3 wallet support
 
 ## Security Notes
 
 - Always verify contract addresses before interacting with them
 - Never share your private keys or seed phrases
-- This application only reads from the blockchain and requires explicit user approval for transactions
-- Review all transaction details in MetaMask before confirming
+- This application requires explicit user approval for all transactions
+- Review all transaction details in your wallet before confirming
+- The contract address `0x8909332Dd684c572703F9158039788a3057D0C40` is pre-configured for the Finnacle Token
 
 ## Contributing
 
